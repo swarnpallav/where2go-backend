@@ -1,0 +1,15 @@
+{
+  "name": "where2go-backend",
+  "version": "1.0.0",
+  "description": "let's you decide where you can go",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "javascript",
+    "backend"
+  ],
+  "author": "Swarn Pallav Bhaskar",
+  "license": "ISC"
+}
