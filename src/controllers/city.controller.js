@@ -1,40 +1,18 @@
 import { City } from "../models/city.model.js";
-import { DestinationSite } from "../models/destinationSite.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
-const addCity = asyncHandler(async (req, res) => {
-	const { name, pincode, destinations } = req.body;
+const getCitiesByStateId = asyncHandler(async (req, res) => {
+	const { id } = req.params;
 
-	if (!name || !pincode) {
-		throw new ApiError(400, "name and pincode fields are required!");
+	if (!id) {
+		throw new ApiError(400, "id is required");
 	}
 
-	if (!destinations || !Array.isArray(destinations) || destinations.length === 0) {
-		return new ApiError(400, "At least one destination is required");
-	}
+	const cities = await City.find({ state: id }, { name: 1, _id: 1 });
 
-	const existingCity = await City.findOne({ pincode });
-
-	if (existingCity) {
-		throw new ApiError(409, `city with ${pincode} already exists`);
-	}
-
-	const city = new City({
-		name,
-		pincode,
-		destinations,
-	});
-
-	const savedCity = await city.save();
-
-	await DestinationSite.updateMany(
-		{ _id: { $in: destinations } },
-		{ $set: { city: savedCity._id } }
-	  );
-
-	return res.status(200).json(new ApiResponse(200, savedCity, "City created successfully"));
+	return res.status(200).json(new ApiResponse(200, cities));
 });
 
-export { addCity };
+export { getCitiesByStateId };

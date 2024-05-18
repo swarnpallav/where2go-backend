@@ -1,5 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 import { arrayMaxLimit } from "../utils/validation.js";
+import { reviewStatuses } from "../contants.js";
 
 const reviewSchema = new Schema(
 	{
@@ -26,9 +27,17 @@ const reviewSchema = new Schema(
 			ref: "DestinationSite",
 			required: [true, "destination site is required"],
 		},
-		isApproved: {
-			type: Boolean,
-			default: false,
+		status: {
+			type: String,
+			enum: ["PENDING", "APPROVED", "REJECTED"],
+			default: reviewStatuses.PENDING,
+		},
+		validatedBy: {
+			type: Schema.Types.ObjectId,
+			ref: "User",
+		},
+		remarks: {
+			type: String,
 		},
 		user: {
 			type: Schema.Types.ObjectId,

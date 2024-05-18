@@ -36,6 +36,9 @@ const userSchema = new Schema(
 		refreshToken: {
 			type: String,
 		},
+		isAdmin: {
+			type: Boolean,
+		},
 	},
 	{ timestamps: true }
 );
@@ -77,3 +80,13 @@ userSchema.methods.generateRefreshToken = function () {
 };
 
 export const User = mongoose.model("User", userSchema);
+
+/*
+
+User 1
+	- User 2
+	- User 3
+
+User 2
+
+*/

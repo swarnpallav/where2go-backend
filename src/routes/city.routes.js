@@ -1,10 +1,8 @@
 import { Router } from "express";
-import { addCity } from "../controllers/city.controller.js";
+import { getCitiesByStateId } from "../controllers/city.controller.js";
 
 const router = Router();
 
-router.route("/add").post(addCity);
-
-router.route("/getDestinations/:id").get();
+router.route("/getCitiesByStateId/:id").get(getCitiesByStateId);
 
 export default router;

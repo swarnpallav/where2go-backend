@@ -2,6 +2,8 @@ import { Router } from "express";
 import {
 	addDestinationSite,
 	getDestinationSiteById,
+	getDestinationsByCityId,
+	like,
 } from "../controllers/destinationSite.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 
@@ -18,5 +20,9 @@ router.route("/add").post(
 	]),
 	addDestinationSite
 );
+
+router.route("/getDestinationsByCityId/:id").get(getDestinationsByCityId);
+
+router.route("/like").patch(like)
 
 export default router;

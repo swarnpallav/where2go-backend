@@ -15,7 +15,7 @@ async function sendMail({ to, subject, html }) {
 	});
 
 	if (error) {
-		return console.error({ error });
+		throw new ApiError(error.statusCode, error.message);
 	}
 }
 

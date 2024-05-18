@@ -28,6 +28,28 @@ const destinationSiteSchema = new Schema(
 			type: Schema.Types.ObjectId,
 			ref: "City",
 		},
+		reviews: [
+			{
+				type: Schema.Types.ObjectId,
+				ref: "Review",
+			},
+		],
+		likes: {
+			type: Number,
+			default: 0,
+			min: 0,
+		},
+		location: {
+			type: {
+				type: String,
+				enum: ["Point"],
+				required: true,
+			},
+			coordinates: {
+				type: [Number],
+				required: true,
+			},
+		},
 	},
 	{ timestamps: true }
 );

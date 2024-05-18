@@ -13,16 +13,34 @@ app.use(express.static("public"));
 
 app.use(cookieParser());
 
-//routes import
+//public routes import
 import userRouter from "./routes/user.routes.js";
 import stateRouter from "./routes/state.routes.js";
 import destinationRouter from "./routes/destinationSite.routes.js";
 import cityRouter from "./routes/city.routes.js";
+import reviewRouter from "./routes/review.routes.js";
+import messageRouter from "./routes/message.routes.js";
+import feedbackRouter from "./routes/feedback.routes.js";
 
-//routes declaration
+//admin routes import
+import userAdminRouter from "./routes/admin/user.admin.routes.js";
+import stateAdminRouter from "./routes/admin/state.admin.routes.js";
+import cityAdminRouter from "./routes/admin/city.admin.routes.js";
+import reviewAdminRouter from "./routes/admin/review.admin.routes.js";
+
+//public routes declaration
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/state", stateRouter);
 app.use("/api/v1/destination", destinationRouter);
 app.use("/api/v1/city", cityRouter);
+app.use("/api/v1/review", reviewRouter);
+app.use("/api/v1/message", messageRouter);
+app.use("/api/v1/feedback", feedbackRouter);
+
+//admin routes declaration
+app.use("/api/v1/admin/user", userAdminRouter);
+app.use("/api/v1/admin/state", stateAdminRouter);
+app.use("/api/v1/admin/city", cityAdminRouter);
+app.use("/api/v1/admin/review", reviewAdminRouter);
 
 export { app };

@@ -2,12 +2,23 @@ import mongoose, { Schema } from "mongoose";
 
 const messageSchema = new Schema(
 	{
-		text: {
-			type: String,
+		body: {
+			repliedTo: {
+				userId: {
+					type: Schema.Types.ObjectId,
+					ref: "User",
+				},
+				name: String,
+			},
+			text: String,
 		},
 		owner: {
 			type: Schema.Types.ObjectId,
 			ref: "User",
+		},
+		parent: {
+			type: Schema.Types.ObjectId,
+			ref: "Message",
 		},
 		replies: [
 			{
