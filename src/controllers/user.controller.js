@@ -21,13 +21,13 @@ const generateAccessAndRefereshTokens = async user => {
 };
 
 const signUp = asyncHandler(async (req, res) => {
-	const { email, password } = req.body;
+	const { username, email, password } = req.body;
 
-	if ([email, password].some(field => field?.trim() === "")) {
+	if ([username, email, password].some(field => field?.trim() === "")) {
 		throw new ApiError(400, "All fields are required");
 	}
 
-	const existingUser = await User.findOne({ email });
+	const existingUser = await User.findOne({ $or: [{ email }, { username }] });
 
 	const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
 
@@ -36,7 +36,7 @@ const signUp = asyncHandler(async (req, res) => {
 			throw new ApiError(409, "User with email already exists");
 		}
 
-		existingUser.password = password;
+		(existingUser.username = username), (existingUser.password = password);
 		existingUser.verificationCode = verificationCode;
 		existingUser.verificationExpiry = new Date(Date.now() + 3600000);
 		existingUser.save();
@@ -49,6 +49,7 @@ const signUp = asyncHandler(async (req, res) => {
 		}
 
 		const user = new User({
+			username,
 			avatar: avatar.url,
 			email,
 			password,
@@ -66,7 +67,7 @@ const signUp = asyncHandler(async (req, res) => {
 	await sendMail({
 		to: email,
 		subject: "Verify your email",
-		html: `<p>Your verification code is ${verificationCode}</p>`,
+		html: `<p>Hi ${username}, your verification code is ${verificationCode}</p>`,
 	});
 
 	return res.status(201).json(
@@ -81,13 +82,13 @@ const signUp = asyncHandler(async (req, res) => {
 });
 
 const login = asyncHandler(async (req, res) => {
-	const { email, password } = req.body;
+	const { username, email, password } = req.body;
 
-	if (!email) {
-		throw new ApiError(400, "email is required");
+	if (!email && !username) {
+		throw new ApiError(400, "email and username both can not be empty");
 	}
 
-	const user = await User.findOne({ email });
+	const user = await User.findOne({ $or: [{ email }, { username }] });
 
 	if (!user) {
 		throw new ApiError(404, "User does not exist");
@@ -239,4 +240,27 @@ const userInfo = asyncHandler(async (req, res) => {
 	return res.status(200).json(new ApiResponse(200, req.user, "User fetched successfully"));
 });
 
-export { signUp, login, refreshAccessToken, logout, userInfo, verifyEmail };
+const isUserNameAvailable = asyncHandler(async (req, res) => {
+	const { username = "" } = req.params;
+
+	if (username.length < 3 || username.length > 15) {
+		throw new ApiError(400, "username can have characters in range 3 - 15");
+	}
+
+	if (!username.match("^[A-Za-z][A-Za-z0-9_]{3,15}$")) {
+		throw new ApiError(
+			400,
+			"username can have A-Z, a-z, 0-9 and underscore. username can only start with alphabet"
+		);
+	}
+
+	const usernameExists = await User.findOne({ username });
+
+	if (usernameExists) {
+		throw new ApiError(409, "username already taken");
+	}
+
+	return res.status(200).json(new ApiResponse(200, "username is available"));
+});
+
+export { signUp, login, refreshAccessToken, logout, userInfo, verifyEmail, isUserNameAvailable };

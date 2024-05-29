@@ -8,9 +8,12 @@ const messageSchema = new Schema(
 					type: Schema.Types.ObjectId,
 					ref: "User",
 				},
-				name: String,
+				username: String,
 			},
-			text: String,
+			text: {
+				type: String,
+				required: [true, "message text can not be empty"],
+			},
 		},
 		owner: {
 			type: Schema.Types.ObjectId,

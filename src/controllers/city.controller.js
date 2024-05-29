@@ -15,4 +15,20 @@ const getCitiesByStateId = asyncHandler(async (req, res) => {
 	return res.status(200).json(new ApiResponse(200, cities));
 });
 
-export { getCitiesByStateId };
+const getCityById = asyncHandler(async (req, res) => {
+	const { id } = req.params;
+
+	if (!id) {
+		throw new ApiError(400, "id is required");
+	}
+
+	const city = await City.findById(id);
+
+	if (!city) {
+		throw new ApiError(404, "City not found");
+	}
+
+	return res.status(200).json(new ApiResponse(200, city));
+});
+
+export { getCitiesByStateId, getCityById };

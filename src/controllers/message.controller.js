@@ -23,13 +23,13 @@ const addMessage = asyncHandler(async (req, res) => {
 			throw new ApiError(404, "parent message not found");
 		}
 
-		const ownerNameObj = await User.findOne(repliedTo.owner._id, { email: 1 });
+		const ownerNameObj = await User.findOne(repliedTo.owner._id, { username: 1 });
 
 		const newMessage = new Message({
 			body: {
 				repliedTo: {
 					userId: repliedTo.owner._id,
-					name: ownerNameObj.email,
+					username: ownerNameObj.username,
 				},
 				text: body.text,
 			},
@@ -63,4 +63,23 @@ const addMessage = asyncHandler(async (req, res) => {
 	return res.status(201).json(new ApiResponse(201, savedMessage, "Message added successfully!"));
 });
 
-export { addMessage };
+const getLatestMessages = asyncHandler(async (req, res) => {
+	const { limit = 50 } = req.query;
+	const messages = await Message.find({ parent: { $exists: false } })
+		.sort({ createdAt: -1 })
+		.limit(limit)
+		.populate([
+			{
+				path: "replies",
+				populate: { path: "owner", select: "username avatar" },
+				select: "body owner createdAt",
+			},
+			{ path: "owner", select: "username avatar" },
+		]);
+
+	const reorderMessages = messages.reverse();
+
+	return res.status(200).json(new ApiResponse(200, reorderMessages));
+});
+
+export { addMessage, getLatestMessages };
