@@ -30,4 +30,20 @@ const addState = asyncHandler(async (req, res) => {
 	return res.status(201).json(new ApiResponse(201, savedState, "State created successfully"));
 });
 
-export { addState };
+const stateListing = asyncHandler(async (req, res) => {
+	const { limit = 10, page = 1 } = req.query;
+
+	const states = await State.aggregate([
+		{ $project: { name: 1, totalCities: { $size: "$cities" }, createdAt: 1, updatedAt: 1 } },
+		{ $skip: limit * (page - 1) },
+		{ $limit: limit },
+	]);
+
+	if (!states.length) {
+		throw new ApiError(500, "Unable to retrieve states data");
+	}
+
+	return res.status(200).json(new ApiResponse(200, states));
+});
+
+export { addState, stateListing };
