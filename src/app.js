@@ -27,6 +27,7 @@ import userAdminRouter from "./routes/admin/user.admin.routes.js";
 import stateAdminRouter from "./routes/admin/state.admin.routes.js";
 import cityAdminRouter from "./routes/admin/city.admin.routes.js";
 import reviewAdminRouter from "./routes/admin/review.admin.routes.js";
+import destinationAdminRouter from "./routes/admin/destinationSite.admin.routes.js";
 
 //public routes declaration
 app.use("/api/v1/user", userRouter);
@@ -42,5 +43,6 @@ app.use("/api/v1/admin/user", userAdminRouter);
 app.use("/api/v1/admin/state", stateAdminRouter);
 app.use("/api/v1/admin/city", cityAdminRouter);
 app.use("/api/v1/admin/review", reviewAdminRouter);
+app.use("/api/v1/admin/destination", destinationAdminRouter);
 
 export { app };

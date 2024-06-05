@@ -57,5 +57,38 @@ const addDestination = asyncHandler(async (req, res) => {
 	return res.status(201).json(new ApiResponse(201, updatedCity, "City updated successfully"));
 });
 
-export { addCity, addDestination };
+const cityListing = asyncHandler(async (req, res) => {
+	const { limit = 10, page = 1 } = req.query;
 
+	const cities = await City.aggregate([
+		{
+			$lookup: {
+				from: "states",
+				localField: "state",
+				foreignField: "_id",
+				as: "state",
+			},
+		},
+		{ $unwind: "$state" },
+		{
+			$project: {
+				name: 1,
+				pincode: 1,
+				state: "$state.name",
+				totalDestinations: { $size: "$destinations" },
+				createdAt: 1,
+				updatedAt: 1,
+			},
+		},
+		{ $skip: limit * (page - 1) },
+		{ $limit: limit },
+	]);
+
+	if (!cities.length) {
+		throw new ApiError(500, "Unable to retrieve cities data");
+	}
+
+	return res.status(200).json(new ApiResponse(200, cities));
+});
+
+export { addCity, addDestination, cityListing };
