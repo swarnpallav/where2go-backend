@@ -91,4 +91,19 @@ const cityListing = asyncHandler(async (req, res) => {
 	return res.status(200).json(new ApiResponse(200, cities));
 });
 
-export { addCity, addDestination, cityListing };
+const getOrphanCities = asyncHandler(async (_, res) => {
+	const cities = await City.find(
+		{ state: { $exists: false } },
+		{
+			name: 1,
+			pincode: 1,
+			createdAt: 1,
+			updatedAt: 1,
+			totalDestinations: { $size: "$destinations" },
+		}
+	);
+
+	return res.status(200).json(new ApiResponse(200, cities));
+});
+
+export { addCity, addDestination, cityListing, getOrphanCities };
