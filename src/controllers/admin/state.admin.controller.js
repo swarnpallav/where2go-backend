@@ -17,6 +17,8 @@ const addEditState = asyncHandler(async (req, res) => {
 
 	let savedState;
 
+	const state = new State({ name, cities });
+
 	if (!id) {
 		const existingState = await State.findOne({ name });
 
@@ -24,13 +26,15 @@ const addEditState = asyncHandler(async (req, res) => {
 			throw new ApiError(409, `State with name ${name} already exists`);
 		}
 
-		const state = new State({ name, cities });
-
 		savedState = await state.save();
 	} else {
-		const state = new State({ name, cities });
-
 		state._id = id;
+
+		const removedCities = state.cities.filter(city => !cities.includes(city));
+
+		if (removedCities.length) {
+			await City.updateMany({ _id: { $in: cities } }, { $unset: { state: 1 } });
+		}
 		savedState = await State.findByIdAndUpdate(id, state, { new: true, upsert: true });
 	}
 

@@ -67,4 +67,18 @@ const destinationListing = asyncHandler(async (req, res) => {
 	return res.status(200).json(new ApiResponse(200, destinations));
 });
 
-export { addDestinationSite, destinationListing };
+const getOrphanDestinations = asyncHandler(async (_, res) => {
+	const destinations = await DestinationSite.find(
+		{ city: { $exists: false } },
+		{
+			name: 1,
+			createdAt: 1,
+			updatedAt: 1,
+			likes: 1,
+		}
+	);
+
+	return res.status(200).json(new ApiResponse(200, destinations));
+});
+
+export { addDestinationSite, destinationListing, getOrphanDestinations };

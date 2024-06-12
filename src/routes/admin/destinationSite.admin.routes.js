@@ -4,6 +4,7 @@ import { verifyAdmin } from "../../middlewares/admin.middleware.js";
 import {
 	addDestinationSite,
 	destinationListing,
+	getOrphanDestinations,
 } from "../../controllers/admin/destinationSite.admin.controller.js";
 import { upload } from "../../middlewares/multer.middleware.js";
 
@@ -23,5 +24,6 @@ router.route("/add").post(
 );
 
 router.route("/destination-listing").get(destinationListing);
+router.route("/get-orphan-destinations").get(getOrphanDestinations);
 
 export default router;
