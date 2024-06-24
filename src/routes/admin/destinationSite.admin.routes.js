@@ -1,7 +1,12 @@
 import { Router } from "express";
 import { verifyJWT } from "../../middlewares/auth.middleware.js";
 import { verifyAdmin } from "../../middlewares/admin.middleware.js";
-import { addDestinationSite } from "../../controllers/admin/destinationSite.admin.controller.js";
+import {
+	addDestinationSite,
+	destinationListing,
+	getOrphanDestinations,
+} from "../../controllers/admin/destinationSite.admin.controller.js";
+import { upload } from "../../middlewares/multer.middleware.js";
 
 const router = Router();
 
@@ -17,5 +22,8 @@ router.route("/add").post(
 	]),
 	addDestinationSite
 );
+
+router.route("/destination-listing").get(destinationListing);
+router.route("/get-orphan-destinations").get(getOrphanDestinations);
 
 export default router;

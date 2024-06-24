@@ -35,4 +35,50 @@ const addDestinationSite = asyncHandler(async (req, res) => {
 		.json(new ApiResponse(200, savedDestination, "destination site created successfully!"));
 });
 
-export { addDestinationSite };
+const destinationListing = asyncHandler(async (req, res) => {
+	const { limit = 10, page = 1 } = req.query;
+
+	const destinations = await DestinationSite.aggregate([
+		{
+			$lookup: {
+				from: "cities",
+				localField: "city",
+				foreignField: "_id",
+				as: "city",
+			},
+		},
+		{ $unwind: "$city" },
+		{
+			$project: {
+				name: 1,
+				city: "$city.name",
+				createdAt: 1,
+				updatedAt: 1,
+			},
+		},
+		{ $skip: limit * (page - 1) },
+		{ $limit: limit },
+	]);
+
+	if (!destinations.length) {
+		throw new ApiError(500, "Unable to retrieve destinations data");
+	}
+
+	return res.status(200).json(new ApiResponse(200, destinations));
+});
+
+const getOrphanDestinations = asyncHandler(async (_, res) => {
+	const destinations = await DestinationSite.find(
+		{ city: { $exists: false } },
+		{
+			name: 1,
+			createdAt: 1,
+			updatedAt: 1,
+			likes: 1,
+		}
+	);
+
+	return res.status(200).json(new ApiResponse(200, destinations));
+});
+
+export { addDestinationSite, destinationListing, getOrphanDestinations };
